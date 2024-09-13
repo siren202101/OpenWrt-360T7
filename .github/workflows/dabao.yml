@@ -124,12 +124,18 @@ jobs:
       if: steps.organize.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
       run: |
         release_tag="${{ env.FIRMWARE_VERSION }}-OpenWrt-360T7"
-        echo "编译时间：$(date +'%Y年%m月%d日 %H点%M分')" >> release.txt
-        echo "默认网关：192.168.50.1" >> release.txt
-        echo "默认插件："$(cat extra.config|sed 's/#.*//g;s/CONFIG_PACKAGE_.*=n//g'|sed 's/CONFIG_PACKAGE_\(.*\)=y/\1/g')|sed 's/ /、/g' >> release.txt
+        echo "## **${{ env.FIRMWARE_VERSION }} Release Notes**" > release.txt
+        echo "### Changelog" >> release.txt
+        # ... 添加修改记录，例如：
+        echo "- Fixed issue #123" >> release.txt
+        echo "- Improved performance" >> release.txt
+        echo "### Download" >> release.txt
+        # 获取 Artifacts 的下载 URL
+        artifact_url=$(curl -sL https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${{ steps.upload-artifact.outputs.artifact_id }} | jq -r '.artifacts[0].archive_download_url')
+        echo "${artifact_url}" >> release.txt
         echo "release_tag=$release_tag" >> $GITHUB_OUTPUT
         echo "status=success" >> $GITHUB_OUTPUT
-
+    
     - name: 将固件上传到release
       uses: softprops/action-gh-release@v1
       if: steps.tag.outputs.status == 'success' && !cancelled()
@@ -139,7 +145,8 @@ jobs:
         name: ${{ env.FIRMWARE_VERSION }}-OpenWrt-360T7
         tag_name: ${{ steps.tag.outputs.release_tag }}
         body_path: release.txt
-        files: ${{ env.FIRMWARE }}/*
+        # 不再指定 files，直接在 release 说明中提供下载链接
+        
 
     - name: PushPlus 通知
       if: env.PUSHPLUS_TOKEN
