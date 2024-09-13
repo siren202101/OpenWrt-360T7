@@ -109,7 +109,7 @@ jobs:
         # 进入OpenWrt目录的上一级目录
         #cd openwrt/..
         # 打包openwrt目录
-        gzip -r openwrt.tar.gz openwrt
+        tar czvf openwrt.tar.gz ~/openwrt
     
     - name: 上传固件到Github Action空间
       uses: actions/upload-artifact@main
