@@ -67,6 +67,7 @@ jobs:
       run: |
         [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
         chmod +x $DIY_P1_SH
+        tar -czvf openwrt.tar.gz openwrt
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P1_SH
 
@@ -109,7 +110,7 @@ jobs:
         # 进入OpenWrt目录的上一级目录
         #cd openwrt/..
         # 打包openwrt目录
-        tar czvf openwrt.tar.gz ~/openwrt
+        tar -czvf openwrt.tar.gz openwrt
     
     - name: 上传固件到Github Action空间
       uses: actions/upload-artifact@main
