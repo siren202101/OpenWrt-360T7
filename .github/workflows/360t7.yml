@@ -88,6 +88,7 @@ jobs:
     - name: 下载包
       id: package
       run: |
+        pwd
         cd openwrt
         make defconfig
         make download -j8
