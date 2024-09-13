@@ -8,7 +8,7 @@
 # Description: Build OpenWrt using GitHub Actions
 #
 
-name: dabao
+name: OpenWrt-360T7-dabao
 
 on:
   workflow_dispatch:
@@ -88,6 +88,7 @@ jobs:
     - name: 下载包
       id: package
       run: |
+        pwd
         cd openwrt
         make defconfig
         make download -j8
@@ -102,51 +103,55 @@ jobs:
         make -j$(nproc) || make -j1 || make -j1 V=s || (curl -k -d "title=OpenWrt-360T7固件编译失败" -d "content=编译固件版本：${{ env.FIRMWARE_VERSION }}%0A编译开始时间：${{ env.START_DATE }}%0A编译结束时间：$(date +'%Y年%m月%d日 %H点%M分%S秒')" -d "token=${{ env.PUSHPLUS_TOKEN }}&channel=cp&webhook=server" "http://www.pushplus.plus/send")
         echo "status=success" >> $GITHUB_OUTPUT
 
-    - name: 整理固件
-      id: organize
-      if: steps.compile.outputs.status == 'success' && env.UPLOAD_FIRMWARE == 'true' && !cancelled()
-      run: |
-        # 进入OpenWrt目录的上一级目录
-        #cd openwrt/..
-        # 打包openwrt目录
-        tar -czvf openwrt.tar.gz openwrt
+    name: 整理固件
     
-    - name: 上传固件到Github Action空间
-      uses: actions/upload-artifact@main
-      if: steps.organize.outputs.status == 'success' && !cancelled()
-      with:
-        name: ${{ env.FIRMWARE_VERSION }}-OpenWrt-360T7
-        path: openwrt.tar.gz
-
-
-    - name: 创建release标签
-      id: tag
-      if: steps.organize.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
-      run: |
-        release_tag="${{ env.FIRMWARE_VERSION }}-OpenWrt-360T7"
-        echo "## **${{ env.FIRMWARE_VERSION }} Release Notes**" > release.txt
-        echo "### Changelog" >> release.txt
-        # ... 添加修改记录，例如：
-        echo "- Fixed issue #123" >> release.txt
-        echo "- Improved performance" >> release.txt
-        echo "### Download" >> release.txt
-        # 获取 Artifacts 的下载 URL
-        artifact_url=$(curl -sL https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${{ steps.upload-artifact.outputs.artifact_id }} | jq -r '.artifacts[0].archive_download_url')
-        echo "${artifact_url}" >> release.txt
-        echo "release_tag=$release_tag" >> $GITHUB_OUTPUT
-        echo "status=success" >> $GITHUB_OUTPUT
+    on:
+      push:
+        branches: [ main ]
     
-    - name: 将固件上传到release
-      uses: softprops/action-gh-release@v1
-      if: steps.tag.outputs.status == 'success' && !cancelled()
-      env:
-        GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
-      with:
-        name: ${{ env.FIRMWARE_VERSION }}-OpenWrt-360T7
-        tag_name: ${{ steps.tag.outputs.release_tag }}
-        body_path: release.txt
-        # 不再指定 files，直接在 release 说明中提供下载链接
-        
+    jobs:
+      build:
+        runs-on: ubuntu-latest
+        steps:
+          - name: Checkout code
+            uses: actions/checkout@v3
+    
+          - name: 压缩固件
+            id: zip
+            run: |
+              cd openwrt
+              zip -r openwrt.zip .
+              echo "ZIP_FILE=openwrt.zip" >> $GITHUB_ENV
+              echo "status=success" >> $GITHUB_OUTPUT
+    
+          - name: 上传固件到GitHub Action空间
+            uses: actions/upload-artifact@main
+            if: steps.zip.outputs.status == 'success' && !cancelled()
+            with:
+              name: openwrt
+              path: openwrt.zip
+    
+          - name: 创建release标签
+            id: tag
+            if: steps.zip.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
+            run: |
+              release_tag="${{ env.FIRMWARE_VERSION }}-OpenWrt-360T7"
+              echo "编译时间：$(date +'%Y年%m月%d日 %H点%M分')" >> release.txt
+              echo "默认网关：192.168.50.1" >> release.txt
+              echo "默认插件："$(cat extra.config|sed 's/#.*//g;s/CONFIG_PACKAGE_.*=n//g'|sed 's/CONFIG_PACKAGE_\(.*\)=y/\1/g')|sed 's/ /、/g' >> release.txt
+              echo "release_tag=$release_tag" >> $GITHUB_OUTPUT
+              echo "status=success" >> $GITHUB_OUTPUT
+    
+          - name: 将固件上传到release
+            uses: softprops/action-gh-release@v1
+            if: steps.tag.outputs.status == 'success' && !cancelled()
+            env:
+              GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+            with:
+              name: ${{ env.FIRMWARE_VERSION }}-OpenWrt-360T7
+              tag_name: ${{ steps.tag.outputs.release_tag }}
+              body_path: release.txt
+              files: openwrt.zip
 
     - name: PushPlus 通知
       if: env.PUSHPLUS_TOKEN
