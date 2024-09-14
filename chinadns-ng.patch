@@ -1,0 +1,4 @@
+define Package/aircrack-ng/extra_provides
+    echo "libnl-genl-3.so.200"; \
+    echo "libnl-3.so.200";
+endef
