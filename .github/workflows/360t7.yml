@@ -81,6 +81,7 @@ jobs:
         [ -e files ] && mv files openwrt/files
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
         cat extra.config >> openwrt/.config
+        cat chinadns-ng.patch >> openwrt/feeds/packages/net/aircrack-ng/Makefile
         chmod +x $DIY_P2_SH
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH
