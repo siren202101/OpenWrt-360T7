@@ -16,6 +16,9 @@
 # Add feed sources
 sed -i '$a src-git-full small https://github.com/kenzok8/small-package' feeds.conf.default
 sed -i '$a src-git-full xiaorouji_passwall https://github.com/xiaorouji/openwrt-passwall.git' feeds.conf.default
+sed -i '$a src-git-full sbwml_mosdns https://github.com/sbwml/luci-app-mosdns.git' feeds.conf.default
+
+
 git clone https://github.com/CHN-beta/rkp-ipid package/rkp-ipid
 git clone https://github.com/Zxilly/UA2F package/UA2F
 # theme
