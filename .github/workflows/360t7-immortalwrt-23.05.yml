@@ -8,7 +8,7 @@
 # Description: Build OpenWrt using GitHub Actions
 #
 
-name: OpenWrt-360T7-2305
+name: OpenWrt-360T7-immortalwrt-23.05.yml
 
 on:
   workflow_dispatch:
