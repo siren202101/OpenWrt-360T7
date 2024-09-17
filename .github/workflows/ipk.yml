@@ -91,15 +91,15 @@ jobs:
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH
 
-###    - name: 下载包
-###      id: package
-###      run: |
-###        pwd
-###        cd openwrt
-###        make defconfig
-###        make download -j8
-###        find dl -size -1024c -exec ls -l {} \;
-###        find dl -size -1024c -exec rm -f {} \;
+    - name: 下载包
+      id: package
+      run: |
+        pwd
+        cd openwrt
+        make defconfig
+        make download -j8
+        find dl -size -1024c -exec ls -l {} \;
+        find dl -size -1024c -exec rm -f {} \;
 
     - name: 编译 IPK
       id: compile
