@@ -1,1 +1,1 @@
-git clone https://github.com/izilzty/luci-app-chinadns-ng.git package/luci-app-chinadns-ng
+sed -i '$a src-git-full xiaorouji https://github.com/xiaorouji/openwrt-passwall.git' feeds.conf.default
