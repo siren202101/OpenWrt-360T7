@@ -23,7 +23,7 @@ env:
   REPO_BRANCH: openwrt-21.02
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: main.config
-  DIY_P1_SH: diy1.sh
+  DIY_P1_SH: ipk.sh
   DIY_P2_SH: diy2.sh
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: true
@@ -91,20 +91,21 @@ jobs:
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH
 
-    - name: 下载包
-      id: package
-      run: |
-        pwd
-        cd openwrt
-        make defconfig
-        make download -j8
-        find dl -size -1024c -exec ls -l {} \;
-        find dl -size -1024c -exec rm -f {} \;
+###    - name: 下载包
+###      id: package
+###      run: |
+###        pwd
+###        cd openwrt
+###        make defconfig
+###        make download -j8
+###        find dl -size -1024c -exec ls -l {} \;
+###        find dl -size -1024c -exec rm -f {} \;
 
     - name: 编译 IPK
       id: compile
       run: |
         cd openwrt
+        make defconfig
         make package/AdGuardHome/adguardhome1/compile V=s
         make package/AdGuardHome/adguardhome2/compile V=s
         echo "::set-output name=status::success"
