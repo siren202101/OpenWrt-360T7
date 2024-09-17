@@ -106,6 +106,7 @@ jobs:
       run: |
         cd openwrt
         make defconfig
+        make package/adguardhome/compile V=s
         make package/feeds/siren202101/adguardhome1/compile V=s
         make package/feeds/siren202101/adguardhome2/compile V=s
         echo "::set-output name=status::success"
