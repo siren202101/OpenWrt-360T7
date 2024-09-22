@@ -79,7 +79,7 @@ jobs:
       run: cd openwrt && ./scripts/feeds update -a
 
     - name: 安装软件源
-      run: cd openwrt && rm -rf feeds/small/{luci-app-mosdns,adguardhome,mosdns,luci-app-passwall} && ./scripts/feeds install -a
+      run: cd openwrt && rm -rf feeds/small/{luci-app-mosdns,subconverter,mosdns,luci-app-passwall} && ./scripts/feeds install -a
 
     - name: 加载自定义配置
       run: |
