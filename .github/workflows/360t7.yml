@@ -81,6 +81,7 @@ jobs:
     - name: 安装软件源
       run: |
         cd openwrt
+        rm -rf feeds/small/{luci-app-mosdns,subconverter,mosdns}
         ./scripts/feeds install -a
     
         # 删除指定目录
