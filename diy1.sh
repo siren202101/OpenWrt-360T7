@@ -21,7 +21,7 @@ sed -i '$a src-git-full kenzok https://github.com/kenzok8/openwrt-packages' feed
 
 
 
-git clone https://github.com/MetaCubeX/subconverter.git package/subconverter
+#git clone https://github.com/MetaCubeX/subconverter.git package/subconverter
 
 
 
