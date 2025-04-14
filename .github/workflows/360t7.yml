@@ -79,7 +79,25 @@ jobs:
       run: cd openwrt && ./scripts/feeds update -a
 
     - name: 安装软件源
-      run: cd openwrt && rm -rf feeds/small/{luci-app-mosdns,subconverter,mosdns,luci-app-passwall} && ./scripts/feeds install -a
+      run: |
+        cd openwrt
+        ./scripts/feeds install -a
+    
+        # 删除指定目录
+        rm -rf package/feeds/small/miniupnpd-iptables
+        rm -rf package/feeds/luci/luci-app-openclash
+        rm -rf package/feeds/luci/luci-app-passwall
+        rm -rf package/feeds/luci/luci-app-dockerman
+        rm -rf package/feeds/luci/luci-app-smartdns
+        rm -rf package/feeds/packages/smartdns
+    
+        # 添加软链接
+        ln -s /feeds/small/luci-app-passwall/     /home/lmg/lede/package/feeds/small
+        ln -s /feeds/small/luci-app-openclash/    /home/lmg/lede/package/feeds/small
+        ln -s /feeds/small/luci-app-dockerman/    /home/lmg/lede/package/feeds/small
+        ln -s /feeds/small/luci-app-smartdns/     /home/lmg/lede/package/feeds/small
+        ln -s /feeds/small/smartdns/              /home/lmg/lede/package/feeds/small
+    
 
     - name: 加载自定义配置
       run: |
