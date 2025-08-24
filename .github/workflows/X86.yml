@@ -68,7 +68,7 @@ jobs:
       if: env.PUSHPLUS_TOKEN
       continue-on-error: true
       run: |
-        curl -k -d "title=开始编译OpenWrt-360T7固件" -d "content=编译固件版本：${{ env.FIRMWARE_VERSION }}%0A编译开始时间：${{ env.START_DATE }}" -d "token=${{ env.PUSHPLUS_TOKEN }}" "http://www.pushplus.plus/send"
+        curl -k -d "title=开始编译OpenWrt-X86固件" -d "content=编译固件版本：${{ env.FIRMWARE_VERSION }}%0A编译开始时间：${{ env.START_DATE }}" -d "token=${{ env.PUSHPLUS_TOKEN }}" "http://www.pushplus.plus/send"
     
     - name: 下载源码
       working-directory: /workdir
