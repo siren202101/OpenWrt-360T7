@@ -20,6 +20,6 @@
 #
 
 # Modify default IP
-sed -i 's/192.168.1.1/192.168.88.7/g' package/base-files/files/bin/config_generate
-sed -i "s/hostname='ImmortalWrt'/hostname='OpenWRT-360T7'/g" package/base-files/files/bin/config_generate
+#sed -i 's/192.168.1.1/192.168.88.7/g' package/base-files/files/bin/config_generate
+#sed -i "s/hostname='ImmortalWrt'/hostname='OpenWRT-360T7'/g" package/base-files/files/bin/config_generate
 sed -i "s/DISTRIB_DESCRIPTION=.*/DISTRIB_DESCRIPTION='OpenWrt By 神棍 $(date +"%Y%m%d")'/g" package/base-files/files/etc/openwrt_release
