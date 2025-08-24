@@ -22,7 +22,10 @@ env:
   REPO_URL: https://github.com/coolsnowwolf/lede
   REPO_BRANCH: master
   FEEDS_CONF: feeds.conf.default
-  CONFIG_FILE: main.config
+  CONFIG_FILE: x86.config
+  BANNER_FILE: banner
+  CONFIG_GENERATE_FILE: config_generate
+  SHADOW_FILE: shadow
   DIY_P1_SH: diy1.sh
   DIY_P2_SH: diy2.sh
   UPLOAD_FIRMWARE: true
@@ -76,35 +79,47 @@ jobs:
         $GITHUB_WORKSPACE/$DIY_P1_SH
 
     - name: 更新软件源
-      run: cd openwrt && ./scripts/feeds update -a
+      run: |
+        cd openwrt
+        # 确保 feeds.conf 包含 small feed
+        ###echo "src-git small https://github.com/kenzok8/small-package" >> feeds.conf
+        ###echo "src-git packages https://git.openwrt.org/feed/packages.git" >> feeds.conf
+        ./scripts/feeds update -a || { echo "软件源更新失败"; exit 1; }
+        # 删除 smpackage 中的指定包
+        rm -rf ./feeds/smpackage/{base-files,dnsmasq,firewall*,fullconenat,libnftnl,nftables,ppp,opkg,ucl,upx,vsftpd*,miniupnpd-iptables,wireless-regdb} || echo "smpackage 部分包不存在"
+        # 删除 luci 和 packages 中指定包
+        rm -rf ./package/feeds/luci/{luci-app-openclash,luci-app-passwall,luci-app-passwall2,luci-app-smartdns,luci-app-upnp}
+        rm -rf ./package/feeds/packages/smartdns
+        # 调试：检查 feeds/small 内容
+        ls -l feeds/small || { echo "feeds/small 目录不存在或为空"; exit 1; }
 
     - name: 安装软件源
       run: |
         cd openwrt
-        #rm -rf feeds/small/{luci-app-mosdns,subconverter,mosdns}
-        ./scripts/feeds install -a
-    
-        # 删除指定目录
-        #rm -rf package/feeds/small/miniupnpd-iptables
-        #rm -rf package/feeds/luci/luci-app-openclash
-        #rm -rf package/feeds/luci/luci-app-passwall
-        #rm -rf package/feeds/luci/luci-app-dockerman
-        #rm -rf package/feeds/luci/luci-app-smartdns
-        #rm -rf package/feeds/packages/smartdns
-    
-        # 添加软链接
-        
-        #ln -s /feeds/small/luci-app-passwall/     /home/lmg/lede/package/feeds/small
-        #ln -s /feeds/small/luci-app-openclash/    /home/lmg/lede/package/feeds/small
-        #ln -s /feeds/small/luci-app-dockerman/    /home/lmg/lede/package/feeds/small
-        #ln -s /feeds/small/luci-app-smartdns/     /home/lmg/lede/package/feeds/small
-        #ln -s /feeds/small/smartdns/              /home/lmg/lede/package/feeds/small
+        ./scripts/feeds install -a || { echo "软件源安装失败"; exit 1; }
+        # 安装特定依赖
+        ./scripts/feeds install libpam || echo "libpam 未找到"
+        ./scripts/feeds install libtirpc || echo "libtirpc 未找到"
+        ./scripts/feeds install libaio || echo "libaio 未找到"
+        # 确保目标目录存在
+        #mkdir -p ./package/feeds/small
+        # 创建软链接
+        ln -sf ./feeds/small/luci-app-passwall/ ./package/feeds/small || echo "luci-app-passwall 不存在"
+        ln -sf ./feeds/small/luci-app-passwall2/ ./package/feeds/small || echo "luci-app-passwall2 不存在"
+        ln -sf ./feeds/small/luci-app-openclash/ ./package/feeds/small || echo "luci-app-openclash 不存在"
+        ln -sf ./feeds/small/luci-app-smartdns/ ./package/feeds/small || echo "luci-app-smartdns 不存在"
+        ln -sf ./feeds/small/smartdns/ ./package/feeds/small || echo "smartdns 不存在"
     
 
     - name: 加载自定义配置
       run: |
         [ -e files ] && mv files openwrt/files
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
+        # 复制配置文件
+        [ -e $CONFIG_GENERATE_FILE ] && mv $CONFIG_GENERATE_FILE openwrt/package/base-files/files/bin/config_generate
+        [ -e $CONFIG_GENERATE_FILE ] && mv $CONFIG_GENERATE_FILE openwrt/package/base-files/luci2/bin/config_generate
+        [ -e $SHADOW_FILE ] && mv $SHADOW_FILE openwrt/package/base-files/files/etc/shadow
+        [ -e $BANNER_FILE ] && mv $BANNER_FILE openwrt/package/base-files/files/etc/banner
         cat extra.config >> openwrt/.config
         cat chinadns-ng.patch >> openwrt/feeds/packages/net/aircrack-ng/Makefile
         chmod +x $DIY_P2_SH
