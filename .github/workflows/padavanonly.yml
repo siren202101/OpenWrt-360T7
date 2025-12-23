@@ -132,22 +132,21 @@ jobs:
 
         
     - name: 整理固件
-      id: organize
-      if: steps.compile.outputs.status == 'success' && env.UPLOAD_FIRMWARE == 'true' && !cancelled()
-      run: |
-        # 整理固件包时候,删除您不想要的固件或者文件,让它不需要上传到Actions空间
-        cd openwrt/bin/targets/*/*
-        rm -rf packages
-        rm -rf version.buildinfo
-        rm -rf profiles.json
-        rm -rf *rootfs*
-        rm -rf *kernel*
-        rm -rf *.manifest
-        rm -rf sha256sums
-        mv *sysupgrade.bin ${{ env.FIRMWARE_VERSION }}-Padavanonly-360T7-108M-sysupgrade.bin
-        mv *factory.bin ${{ env.FIRMWARE_VERSION }}-Padavanonly-360T7-108M-factory.bin
-        echo "FIRMWARE=$PWD" >> $GITHUB_ENV
-        echo "status=success" >> $GITHUB_OUTPUT
+          id: organize
+          if: steps.compile.outputs.status == 'success' && env.UPLOAD_FIRMWARE == 'true' && !cancelled()
+          run: |
+            cd openwrt/bin/targets/*/*
+            rm -rf packages version.buildinfo profiles.json *rootfs* *kernel* *.manifest sha256sums
+            
+            # 搜索目录下所有的 .bin 文件并添加前缀
+            for file in *.bin; do
+              if [ -f "$file" ]; then
+                mv "$file" "${{ env.FIRMWARE_VERSION }}-Padavanonly-$file"
+              fi
+            done
+    
+            echo "FIRMWARE=$PWD" >> $GITHUB_ENV
+            echo "status=success" >> $GITHUB_OUTPUT
 
     - name: 上传固件到Github Action空间
       uses: actions/upload-artifact@main
