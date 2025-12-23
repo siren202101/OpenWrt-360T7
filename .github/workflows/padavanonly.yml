@@ -8,7 +8,7 @@
 # Description: Build OpenWrt using GitHub Actions
 #
 
-name: OpenWrt-360T7
+name: Padavanonly-360T7
 
 on:
   workflow_dispatch:
