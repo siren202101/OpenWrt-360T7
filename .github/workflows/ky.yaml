@@ -21,7 +21,7 @@ on:
 env:
   REPO_URL: https://github.com/immortalwrt/immortalwrt.git
   REPO_BRANCH: v24.10.0
-  FEEDS_CONF: imm.feeds.conf.default
+  FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: imm.config
   DIY_P1_SH: imm.diy1.sh
   DIY_P2_SH: imm.diy2.sh
