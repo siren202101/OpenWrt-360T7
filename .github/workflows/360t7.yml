@@ -139,10 +139,11 @@ jobs:
         rm -rf packages
         rm -rf version.buildinfo
         rm -rf profiles.json
-        rm -rf *rootfs*
-        rm -rf *kernel*
+        #rm -rf *rootfs*
+        #rm -rf *kernel*
         rm -rf *.manifest
         rm -rf sha256sums
+        mv *ddr3-bl2.bin ${{ env.FIRMWARE_VERSION }}-OpenWrt-360T7-ddr3-bl2.bin
         mv *sysupgrade.bin ${{ env.FIRMWARE_VERSION }}-OpenWrt-360T7-108M-sysupgrade.bin
         mv *factory.bin ${{ env.FIRMWARE_VERSION }}-OpenWrt-360T7-108M-factory.bin
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
