@@ -18,6 +18,7 @@ sed -i '$a src-git small https://github.com/kenzok8/small-package' feeds.conf.de
 sed -i '$a src-git kenzok https://github.com/kenzok8/openwrt-packages' feeds.conf.default
 #sed -i '$a src-git-full xiaorouji_passwall https://github.com/xiaorouji/openwrt-passwall.git' feeds.conf.default
 #sed -i '$a src-git-full sbwml_mosdns https://github.com/sbwml/luci-app-mosdns.git' feeds.conf.default
+sed -i '1i src-git-full kenzok8-screen https://github.com/siren202101/kenzok8-screen.git' feeds.conf.default
 
 
 
