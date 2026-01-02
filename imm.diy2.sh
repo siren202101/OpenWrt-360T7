@@ -25,3 +25,7 @@ sed -i 's/192.168.1.1/192.168.88.7/g' package/base-files/files/bin/config_genera
 sed -i 's/192.168.1.1/192.168.88.7/g' ppackage/base-files/luci2/bin/config_generate
 #sed -i "s/hostname='ImmortalWrt'/hostname='OpenWRT-360T7'/g" package/base-files/files/bin/config_generate
 sed -i "s/DISTRIB_DESCRIPTION=.*/DISTRIB_DESCRIPTION='OpenWrt By 神棍 $(date +"%Y%m%d")'/g" package/base-files/files/etc/openwrt_release
+
+mkdir -p files/lib/firmware/mediatek
+# 从可靠源下载 360T7 的通用 EEPROM 备份 (此处为示例路径)
+wget -O files/lib/firmware/mediatek/mt7981_eeprom_mt7976_dbdc.bin https://raw.githubusercontent.com/hanwckf/immortalwrt-mt798x/master/target/linux/mediatek/filogic/base-files/lib/firmware/mediatek/mt7981_eeprom_mt7976_dbdc.bin
