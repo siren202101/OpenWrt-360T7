@@ -30,15 +30,17 @@ sed -i "s/DISTRIB_DESCRIPTION=.*/DISTRIB_DESCRIPTION='OpenWrt By 神棍 $(date +
 # 强制内置 MT7981 + MT7976 DBDC EEPROM（360T7 必需）
 # =========================================================
 
-EEP_DIR="target/linux/mediatek/files/lib/firmware/mediatek"
+# 修改后的推荐路径（源码根目录下的 files 文件夹）
+EEP_DIR="files/lib/firmware/mediatek"
 
 mkdir -p "${EEP_DIR}"
 
+# 下载到这个通用路径，OpenWrt 打包脚本会自动将其合并到 RootFS
 wget -q -O "${EEP_DIR}/mt7981_eeprom_mt7976_dbdc.bin" \
 https://raw.githubusercontent.com/openwrt/mt76/eb567bc7f9b692bbf1ddfe31dd740861c58ec85b/firmware/mt7981_eeprom_mt7976_dbdc.bin
 
-# 简单校验，避免下载失败却继续编译
+# 校验
 [ -s "${EEP_DIR}/mt7981_eeprom_mt7976_dbdc.bin" ] || {
-    echo "ERROR: mt7981_eeprom_mt7976_dbdc.bin download failed"
+    echo "ERROR: download failed"
     exit 1
 }
