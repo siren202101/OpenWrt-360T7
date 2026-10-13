@@ -36,7 +36,7 @@ jobs:
 
     steps:
     - name: 检查项目分支
-      uses: actions/checkout@main
+      uses: actions/checkout@v4
 
     - name: 初始化编译环境
       env:
@@ -166,7 +166,7 @@ jobs:
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: 上传固件到Github Action空间
-      uses: actions/upload-artifact@main
+      uses: actions/upload-artifact@v4
       if: steps.organize.outputs.status == 'success' && !cancelled()
       with:
         name: ${{ env.FIRMWARE_VERSION }}-OpenWrt-360T7
@@ -184,7 +184,7 @@ jobs:
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: 将固件上传到release
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2
       if: steps.tag.outputs.status == 'success' && !cancelled()
       env:
         GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
@@ -201,13 +201,13 @@ jobs:
         curl -k -d "title=OpenWrt-360T7固件编译成功" -d "content=编译固件版本：${{ env.FIRMWARE_VERSION }}%0A编译开始时间：${{ env.START_DATE }}%0A编译结束时间：$(date +'%Y年%m月%d日 %H点%M分%S秒')" -d "token=${{ env.PUSHPLUS_TOKEN }}" "http://www.pushplus.plus/send"
 
     - name: 删除工作流运行
-      uses: GitRML/delete-workflow-runs@main
+      uses: GitRML/delete-workflow-runs@v1
       with:
         retain_days: 1
         keep_minimum_runs: 3
 
     - name: 删除旧的releases
-      uses: dev-drprasad/delete-older-releases@v0.1.0
+      uses: dev-drprasad/delete-older-releases@v1
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
       with:
         keep_latest: 3
