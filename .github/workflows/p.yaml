@@ -8,7 +8,7 @@
 # Description: Build OpenWrt using GitHub Actions
 #
 
-name: Padavanonly-360T7-test
+name: Padavanonly-360T7
 
 on:
   workflow_dispatch:
@@ -32,7 +32,6 @@ env:
 
 jobs:
   build:
-    # 升级到 ubuntu-24.04 (或 ubuntu-22.04)，推荐使用最新环境以支持现代编译工具链
     runs-on: ubuntu-24.04
 
     steps:
@@ -179,5 +178,5 @@ jobs:
       with:
         keep_latest: 3
         delete_tags: true
-      esys:
+      env:
         GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
